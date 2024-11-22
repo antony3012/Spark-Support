@@ -66,7 +66,6 @@ public class ProductController {
         }
     }
 
-    // Delete product by ID
     @DeleteMapping("/removeProduct/{id}")
     public ResponseEntity<Void> deleteProduct(@PathVariable int id) {
         Optional<Product> product = productService.findById((long) id);
