@@ -45,26 +45,42 @@ public class ProductService {
         double totalRevenue = 0.0;
         List<Product> products = productRepository.findAll();
 
-        for (Product product : products) {
-            List<Sale> sales = product.getSales();
-            for (Sale sale : sales) {
-                totalRevenue += sale.getQuantity() * product.getPrice();
-            }
-        }
+//        for (Product product : products) {
+//            List<Sale> sales = product.getSales();
+//            for (Sale sale : sales) {
+//                totalRevenue += sale.getQuantity() * product.getPrice();
+//            }
+//        }
+
+         totalRevenue = products.stream()
+                .flatMap(product -> product.getSales().stream()
+                        .map(sale -> sale.getQuantity() * product.getPrice()))
+                .mapToDouble(Double::doubleValue)
+                .sum();
+
         return "Total Revenue: " +totalRevenue;
     }
 
     public double getRevenueByProduct(long productId) {
         Optional<Product> productOpt = productRepository.findById(productId);
-        if (productOpt.isPresent()) {
-            Product product = productOpt.get();
-            double revenue = 0.0;
-            List<Sale> sales = product.getSales();
-            for (Sale sale : sales) {
-                revenue += sale.getQuantity() * product.getPrice();
-            }
-            return revenue;
-        }
-        return 0.0;
+//        if (productOpt.isPresent()) {
+//            Product product = productOpt.get();
+//            double revenue = 0.0;
+//            List<Sale> sales = product.getSales();
+//            for (Sale sale : sales) {
+//                revenue += sale.getQuantity() * product.getPrice();
+//            }
+//
+//
+//            return revenue;
+//        }
+
+        return productOpt.map(product ->
+                product.getSales().stream()
+                        .mapToDouble(sale -> sale.getQuantity() * product.getPrice())
+                        .sum()
+        ).orElse(0.0);
+
+//        return 0.0;
     }
 }
